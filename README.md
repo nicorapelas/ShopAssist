@@ -19,7 +19,9 @@ npm install
 npm start
 ```
 
-Open in **Expo Go** → **Server** → **Sign in** → **Search** (SKU/barcode/name) → tap a product → edit stock/barcode (warehouse+) or name/price (manager/admin).
+Open in **Expo Go** → **Server** → **Sign in** → **Search** → **Scan barcode** (camera) or type SKU/name → tap a product → edit stock/barcode (warehouse+) or name/price (manager/admin).
+
+Camera scanning requires a physical device (not web). Grant camera permission when prompted.
 
 Saving a product bumps **catalog revision** on the server; POS tills and Back Office Products refresh within ~30s.
 

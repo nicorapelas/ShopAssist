@@ -1,4 +1,4 @@
-import { forwardRef } from 'react'
+import { forwardRef, type ReactNode } from 'react'
 import {
   ActivityIndicator,
   Pressable,
@@ -40,27 +40,38 @@ export const Input = forwardRef<TextInput, TextInputProps>(function Input(props,
 
 export function Btn({
   label,
+  icon,
   onPress,
   variant = 'primary',
   disabled,
+  compact,
+  accessibilityLabel,
 }: {
-  label: string
+  label?: string
+  icon?: ReactNode
   onPress: () => void
   variant?: 'primary' | 'ghost' | 'danger'
   disabled?: boolean
+  /** Icon-only toolbar style (no top margin, fixed height). */
+  compact?: boolean
+  accessibilityLabel?: string
 }) {
+  const a11y = accessibilityLabel ?? label ?? 'Button'
   return (
     <Pressable
       onPress={onPress}
       disabled={disabled}
+      accessibilityRole="button"
+      accessibilityLabel={a11y}
       style={({ pressed }) => [
         styles.btn,
+        compact && styles.btnCompact,
         variant === 'ghost' && styles.btnGhost,
         variant === 'danger' && styles.btnDanger,
         (disabled || pressed) && styles.btnPressed,
       ]}
     >
-      <Text style={[styles.btnText, variant === 'ghost' && styles.btnGhostText]}>{label}</Text>
+      {icon ?? (label ? <Text style={[styles.btnText, variant === 'ghost' && styles.btnGhostText]}>{label}</Text> : null)}
     </Pressable>
   )
 }
@@ -114,7 +125,14 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 14,
     alignItems: 'center',
+    justifyContent: 'center',
     marginTop: 16,
+  },
+  btnCompact: {
+    flex: 1,
+    marginTop: 0,
+    minHeight: 48,
+    paddingVertical: 12,
   },
   btnGhost: {
     backgroundColor: 'transparent',

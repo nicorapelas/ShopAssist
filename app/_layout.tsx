@@ -2,6 +2,7 @@ import { Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import 'react-native-reanimated'
 import { AuthProvider } from '@/src/auth/AuthContext'
+import { CogniPosHeaderLogo } from '@/src/components/CogniPosHeaderLogo'
 import { colors } from '@/src/theme'
 
 export default function RootLayout() {
@@ -12,6 +13,7 @@ export default function RootLayout() {
           headerStyle: { backgroundColor: colors.panel },
           headerTintColor: colors.text,
           headerTitleStyle: { fontWeight: '600' },
+          headerLeft: () => <CogniPosHeaderLogo />,
           contentStyle: { backgroundColor: colors.bg },
         }}
       >
