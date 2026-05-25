@@ -1,8 +1,17 @@
+import { Image } from 'expo-image'
 import { router } from 'expo-router'
 import { useState } from 'react'
-import { KeyboardAvoidingView, Platform, ScrollView } from 'react-native'
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuth } from '@/src/auth/AuthContext'
-import { Btn, ErrorText, FieldLabel, Input, Muted, Screen, Title } from '@/src/components/ui'
+import { Btn, ErrorText, FieldLabel, Input, Muted } from '@/src/components/ui'
+import { colors } from '@/src/theme'
 
 export default function LoginScreen() {
   const { login } = useAuth()
@@ -25,35 +34,80 @@ export default function LoginScreen() {
   }
 
   return (
-    <Screen>
+    <SafeAreaView style={styles.safe}>
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
+        style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <ScrollView keyboardShouldPersistTaps="handled">
-          <Title>Sign in</Title>
-          <Muted>Back Office staff account with catalog.read.</Muted>
-          <FieldLabel>Email</FieldLabel>
-          <Input
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            keyboardType="email-address"
-            autoComplete="email"
-          />
-          <FieldLabel>Password</FieldLabel>
-          <Input
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            autoComplete="password"
-            onSubmitEditing={() => void submit()}
-          />
-          {error ? <ErrorText>{error}</ErrorText> : null}
-          <Btn label={busy ? 'Signing in…' : 'Sign in'} onPress={() => void submit()} disabled={busy} />
-          <Btn label="Change server" onPress={() => router.push('/setup')} variant="ghost" />
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={styles.scroll}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.logoWrap}>
+            <Image
+              source={require('@/assets/images/logo-SA_Port-light.png')}
+              style={styles.logo}
+              contentFit="contain"
+              accessibilityLabel="ShopAssist"
+            />
+          </View>
+
+          <View style={styles.form}>
+            <Muted>Back Office staff account with catalog.read.</Muted>
+            <FieldLabel>Email</FieldLabel>
+            <Input
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              autoComplete="email"
+            />
+            <FieldLabel>Password</FieldLabel>
+            <Input
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              autoComplete="password"
+              onSubmitEditing={() => void submit()}
+            />
+            {error ? <ErrorText>{error}</ErrorText> : null}
+            <Btn label={busy ? 'Signing in…' : 'Sign in'} onPress={() => void submit()} disabled={busy} />
+            <Btn label="Change server" onPress={() => router.push('/setup')} variant="ghost" />
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </Screen>
+    </SafeAreaView>
   )
 }
+
+const styles = StyleSheet.create({
+  safe: {
+    flex: 1,
+    backgroundColor: colors.bg,
+  },
+  flex: {
+    flex: 1,
+  },
+  scroll: {
+    flexGrow: 1,
+    paddingHorizontal: 24,
+    paddingBottom: 32,
+  },
+  logoWrap: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 24,
+    paddingBottom: 8,
+    minHeight: 280,
+  },
+  logo: {
+    width: 240,
+    height: 312,
+  },
+  form: {
+    width: '100%',
+    maxWidth: 420,
+    alignSelf: 'center',
+  },
+})

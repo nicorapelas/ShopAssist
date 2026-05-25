@@ -1,12 +1,13 @@
+/** Light workspace theme for ShopAssist. */
 export const colors = {
-  bg: '#0f1419',
-  panel: '#1a1f26',
-  border: '#2d3748',
-  text: '#f1f5f9',
-  muted: '#94a3b8',
-  primary: '#2563eb',
+  bg: '#f4f6f9',
+  panel: '#ffffff',
+  border: '#d8dee9',
+  text: '#0f172a',
+  muted: '#64748b',
+  primary: '#0909e8',
   primaryText: '#ffffff',
-  danger: '#f87171',
-  success: '#4ade80',
-  inputBg: '#111820',
+  danger: '#dc2626',
+  success: '#15803d',
+  inputBg: '#ffffff',
 } as const

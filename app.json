@@ -4,9 +4,14 @@
     "slug": "ShopAssist",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/android-icon-foreground.png",
     "scheme": "shopassist",
     "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/images/logo-SA_Port-light.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
@@ -41,12 +46,13 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
+          "image": "./assets/images/logo-SA_Port-light.png",
+          "imageWidth": 240,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
           "dark": {
-            "backgroundColor": "#000000"
+            "image": "./assets/images/logo-SA_Port-light.png",
+            "backgroundColor": "#ffffff"
           }
         }
       ]

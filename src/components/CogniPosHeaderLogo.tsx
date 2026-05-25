@@ -1,15 +1,15 @@
 import { Image } from 'expo-image'
-import { StyleSheet, View } from 'react-native'
+import { Platform, StyleSheet, View } from 'react-native'
 
-/** CogniPOS wordmark for stack headers (dark variant on panel background). */
+/** ShopAssist wordmark for stack headers. */
 export function CogniPosHeaderLogo() {
   return (
     <View style={styles.wrap}>
       <Image
-        source={require('../../assets/images/logo-text_bottom1-dark.png')}
+        source={require('../../assets/images/logo-SA_land-dark.png')}
         style={styles.logo}
         contentFit="contain"
-        accessibilityLabel="CogniPOS"
+        accessibilityLabel="ShopAssist"
       />
     </View>
   )
@@ -18,11 +18,12 @@ export function CogniPosHeaderLogo() {
 const styles = StyleSheet.create({
   wrap: {
     justifyContent: 'center',
-    marginLeft: -16,
+    alignItems: 'flex-start',
+    marginLeft: Platform.OS === 'ios' ? -8 : -16,
     paddingLeft: 0,
   },
   logo: {
-    width: 128,
-    height: 30,
+    width: 156,
+    height: 36,
   },
 })

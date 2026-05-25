@@ -6,10 +6,12 @@ Mobile app (Expo) for Jacobs Cycles — floor staff tool connected to the shop A
 
 `https://api-dev.jacobscycles.com/api`
 
-Requires on Steve:
+Requires on Steve (shop PC — tunnel + API must run there):
 
 1. `npm run dev` in `server/` (port 4000)
 2. `cloudflared tunnel run jacobs-cycles_tunnel`
+
+See [../docs/cloudflare-tunnel.md](../docs/cloudflare-tunnel.md) for config file location, error 1033, and copying setup from Steve.
 
 ## Run
 
