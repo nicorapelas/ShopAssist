@@ -12,6 +12,8 @@ import type { AuthResponse, AuthUser } from '../api/types'
 import { canUseShopAssist } from '../permissions'
 import { clearSession, loadSession, saveSession, type StoredSession } from './storage'
 
+const SESSION_EXPIRY_GRACE_MS = 1000
+
 type AuthContextValue = {
   ready: boolean
   session: StoredSession | null
@@ -21,6 +23,19 @@ type AuthContextValue = {
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
+
+function jwtExpiryMs(token: string): number | null {
+  try {
+    const [, payload] = token.split('.')
+    if (!payload) return null
+    const normalized = payload.replace(/-/g, '+').replace(/_/g, '/')
+    const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '=')
+    const decoded = JSON.parse(atob(padded)) as { exp?: number }
+    return typeof decoded.exp === 'number' ? decoded.exp * 1000 : null
+  } catch {
+    return null
+  }
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false)
@@ -56,6 +71,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       },
     })
   }, [session])
+
+  useEffect(() => {
+    if (!session?.refreshToken) return
+    const expiresAt = jwtExpiryMs(session.refreshToken)
+    if (!expiresAt) return
+
+    const delay = expiresAt - Date.now() + SESSION_EXPIRY_GRACE_MS
+    if (delay <= 0) {
+      void clearSession()
+      setSession(null)
+      return
+    }
+
+    const timer = setTimeout(() => {
+      void clearSession()
+      setSession(null)
+    }, delay)
+    return () => clearTimeout(timer)
+  }, [session?.refreshToken])
 
   const login = useCallback(
     async (email: string, password: string) => {

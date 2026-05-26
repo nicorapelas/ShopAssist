@@ -1,9 +1,10 @@
 import { Stack, router, useLocalSearchParams } from 'expo-router'
-import { useCallback, useEffect, useState } from 'react'
-import { Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Alert, Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { apiFetch } from '@/src/api/client'
 import type { ProductRow } from '@/src/api/types'
 import { useAuth } from '@/src/auth/AuthContext'
+import { useShopAssistCart } from '@/src/cart/CartContext'
 import {
   Btn,
   ErrorText,
@@ -14,10 +15,15 @@ import {
   Screen,
 } from '@/src/components/ui'
 import { canEditPricingFields, canEditStockFields } from '@/src/permissions'
+import type { ShopAssistColors } from '@/src/theme'
+import { useShopAssistTheme } from '@/src/themeContext'
 
 export default function ProductScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
   const { user } = useAuth()
+  const { addProduct } = useShopAssistCart()
+  const { colors } = useShopAssistTheme()
+  const styles = useMemo(() => makeStyles(colors), [colors])
   const canStock = canEditStockFields(user)
   const canPricing = canEditPricingFields(user)
 
@@ -53,8 +59,15 @@ export default function ProductScreen() {
     void load()
   }, [load])
 
+  useEffect(() => {
+    if (!notice) return
+    const timer = setTimeout(() => setNotice(null), 3000)
+    return () => clearTimeout(timer)
+  }, [notice])
+
   async function save() {
     if (!id || !product) return
+    Keyboard.dismiss()
     if (!canStock && !canPricing) {
       setError('You do not have permission to edit products (catalog.write).')
       return
@@ -85,7 +98,11 @@ export default function ProductScreen() {
         body: JSON.stringify(body),
       })
       setProduct(updated)
-      setNotice('Saved — tills will refresh catalog within about a minute.')
+      setName(updated.name)
+      setBarcode(updated.barcode ?? '')
+      setPrice(String(updated.price))
+      setStock(String(updated.stock))
+      setNotice('Saved successfully')
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Save failed')
     } finally {
@@ -111,6 +128,10 @@ export default function ProductScreen() {
   }
 
   const tracksStock = product.trackInventory !== false
+  const hasChanges =
+    (canPricing && (name !== product.name || price !== String(product.price))) ||
+    (canStock &&
+      (barcode !== (product.barcode ?? '') || (tracksStock && stock !== String(product.stock))))
 
   return (
     <Screen style={{ paddingTop: 0 }}>
@@ -134,9 +155,22 @@ export default function ProductScreen() {
           {canPricing ? (
             <>
               <FieldLabel>Name</FieldLabel>
-              <Input value={name} onChangeText={setName} />
+              <Input
+                value={name}
+                onChangeText={(value) => {
+                  setName(value)
+                  setNotice(null)
+                }}
+              />
               <FieldLabel>Price (VAT inclusive)</FieldLabel>
-              <Input value={price} onChangeText={setPrice} keyboardType="decimal-pad" />
+              <Input
+                value={price}
+                onChangeText={(value) => {
+                  setPrice(value)
+                  setNotice(null)
+                }}
+                keyboardType="decimal-pad"
+              />
             </>
           ) : (
             <>
@@ -150,11 +184,25 @@ export default function ProductScreen() {
           {canStock ? (
             <>
               <FieldLabel>Barcode</FieldLabel>
-              <Input value={barcode} onChangeText={setBarcode} autoCapitalize="none" />
+              <Input
+                value={barcode}
+                onChangeText={(value) => {
+                  setBarcode(value)
+                  setNotice(null)
+                }}
+                autoCapitalize="none"
+              />
               {tracksStock ? (
                 <>
                   <FieldLabel>Stock on hand</FieldLabel>
-                  <Input value={stock} onChangeText={setStock} keyboardType="number-pad" />
+                  <Input
+                    value={stock}
+                    onChangeText={(value) => {
+                      setStock(value)
+                      setNotice(null)
+                    }}
+                    keyboardType="number-pad"
+                  />
                 </>
               ) : (
                 <Muted>This item does not track inventory.</Muted>
@@ -165,20 +213,29 @@ export default function ProductScreen() {
           )}
 
           {error ? <ErrorText>{error}</ErrorText> : null}
-          {notice ? <Muted>{notice}</Muted> : null}
+
+          <Btn
+            label="Add to cart"
+            variant="ghost"
+            onPress={() => {
+              addProduct(product)
+              setNotice('Added to cart')
+            }}
+            disabled={!canStock}
+          />
 
           {(canStock || canPricing) && (
             <Btn
               label={saving ? 'Saving…' : 'Save changes'}
               onPress={() => void save()}
-              disabled={saving}
+              disabled={saving || !hasChanges}
             />
           )}
           <Btn
             label="Back to search"
             variant="ghost"
             onPress={() => {
-              if (notice) router.back()
+              if (!hasChanges) router.back()
               else {
                 Alert.alert('Discard?', 'Go back without saving?', [
                   { text: 'Stay', style: 'cancel' },
@@ -189,6 +246,39 @@ export default function ProductScreen() {
           />
         </ScrollView>
       </KeyboardAvoidingView>
+      {notice ? (
+        <View style={styles.toast} pointerEvents="none">
+          <Text style={styles.toastText}>{notice}</Text>
+        </View>
+      ) : null}
     </Screen>
   )
+}
+
+function makeStyles(colors: ShopAssistColors) {
+  return StyleSheet.create({
+  toast: {
+    position: 'absolute',
+    top: 12,
+    left: 20,
+    right: 20,
+    backgroundColor: '#ecfdf5',
+    borderColor: '#bbf7d0',
+    borderWidth: colors.borderWidth,
+    borderRadius: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    shadowColor: '#0f172a',
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 4,
+  },
+  toastText: {
+    color: '#166534',
+    fontSize: 15,
+    fontWeight: '800',
+    textAlign: 'center',
+  },
+})
 }

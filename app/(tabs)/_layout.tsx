@@ -1,35 +1,76 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
-
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { Ionicons } from '@expo/vector-icons'
+import { router, Tabs } from 'expo-router'
+import { Pressable, StyleSheet } from 'react-native'
+import { HapticTab } from '@/components/haptic-tab'
+import { CogniPosHeaderLogo } from '@/src/components/CogniPosHeaderLogo'
+import { useShopAssistTheme } from '@/src/themeContext'
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
+  const { colors } = useShopAssistTheme()
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
+        headerShown: true,
+        headerLeft: () => <CogniPosHeaderLogo />,
+        headerRight: () => (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Open settings"
+            onPress={() => router.push('/settings')}
+            style={styles.settingsButton}
+          >
+            <Ionicons name="settings-outline" size={24} color={colors.primary} />
+          </Pressable>
+        ),
+        headerTitle: '',
+        headerStyle: { backgroundColor: colors.panel },
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.muted,
+        tabBarStyle: {
+          backgroundColor: colors.panel,
+          borderTopColor: colors.border,
+          height: 76,
+          paddingBottom: 10,
+          paddingTop: 6,
+        },
+        tabBarItemStyle: {
+          paddingBottom: 10,
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: '600',
+        },
         tabBarButton: HapticTab,
-      }}>
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          title: 'Catalog',
+          tabBarIcon: ({ color, size }) => <Ionicons name="cube-outline" size={size} color={color} />,
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="cart"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: 'Cart',
+          tabBarIcon: ({ color, size }) => <Ionicons name="cart-outline" size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="notes"
+        options={{
+          title: 'Notes',
+          tabBarIcon: ({ color, size }) => <Ionicons name="document-text-outline" size={size} color={color} />,
         }}
       />
     </Tabs>
-  );
+  )
 }
+
+const styles = StyleSheet.create({
+  settingsButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+})

@@ -16,7 +16,7 @@ type AppBootSplashProps = {
 }
 
 /**
- * Shows ShopAssist logo on a white screen until auth storage is ready.
+ * Shows ShopAssist logo on a branded neutral screen until auth storage is ready.
  * Works in Expo Go (native splash from app.json only applies to dev/production builds).
  */
 export function AppBootSplash({ children }: AppBootSplashProps) {
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     zIndex: 9999,
     elevation: 9999,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#dbcfb4',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 32,

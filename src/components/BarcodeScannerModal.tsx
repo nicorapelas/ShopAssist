@@ -1,9 +1,10 @@
 import { CameraView, useCameraPermissions } from 'expo-camera'
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native'
 import { playScanBeep } from '@/src/audio/scanBeep'
 import { Btn, Muted } from '@/src/components/ui'
-import { colors } from '@/src/theme'
+import type { ShopAssistColors } from '@/src/theme'
+import { useShopAssistTheme } from '@/src/themeContext'
 
 type Props = {
   visible: boolean
@@ -12,6 +13,8 @@ type Props = {
 }
 
 export function BarcodeScannerModal({ visible, onClose, onBarcode }: Props) {
+  const { colors } = useShopAssistTheme()
+  const styles = useMemo(() => makeStyles(colors), [colors])
   const [permission, requestPermission] = useCameraPermissions()
   const [torch, setTorch] = useState(false)
   const lastScanRef = useRef<{ value: string; at: number } | null>(null)
@@ -85,7 +88,8 @@ export function BarcodeScannerModal({ visible, onClose, onBarcode }: Props) {
   )
 }
 
-const styles = StyleSheet.create({
+function makeStyles(colors: ShopAssistColors) {
+  return StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
@@ -130,7 +134,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 8,
-    borderWidth: 1,
+    borderWidth: colors.borderWidth,
     borderColor: colors.border,
   },
   chipText: {
@@ -138,3 +142,4 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 })
+}

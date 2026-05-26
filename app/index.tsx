@@ -25,5 +25,5 @@ export default function Index() {
 
   if (!hasUrl) return <Redirect href="/setup" />
   if (!session) return <Redirect href="/login" />
-  return <Redirect href="/search" />
+  return <Redirect href="/(tabs)" />
 }

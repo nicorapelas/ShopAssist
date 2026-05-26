@@ -1,4 +1,4 @@
-import { forwardRef, type ReactNode } from 'react'
+import { forwardRef, useMemo, type ReactNode } from 'react'
 import {
   ActivityIndicator,
   Pressable,
@@ -9,31 +9,43 @@ import {
   View,
   type ViewStyle,
 } from 'react-native'
-import { colors } from '../theme'
+import type { ShopAssistColors } from '../theme'
+import { useShopAssistTheme } from '../themeContext'
 
 export function Screen({ children, style }: { children: React.ReactNode; style?: ViewStyle }) {
+  const { colors } = useShopAssistTheme()
+  const styles = useMemo(() => makeStyles(colors), [colors])
   return <View style={[styles.screen, style]}>{children}</View>
 }
 
 export function Title({ children }: { children: string }) {
+  const { colors } = useShopAssistTheme()
+  const styles = useMemo(() => makeStyles(colors), [colors])
   return <Text style={styles.title}>{children}</Text>
 }
 
 export function Muted({ children }: { children: React.ReactNode }) {
+  const { colors } = useShopAssistTheme()
+  const styles = useMemo(() => makeStyles(colors), [colors])
   return <Text style={styles.muted}>{children}</Text>
 }
 
 export function FieldLabel({ children }: { children: string }) {
+  const { colors } = useShopAssistTheme()
+  const styles = useMemo(() => makeStyles(colors), [colors])
   return <Text style={styles.label}>{children}</Text>
 }
 
 export const Input = forwardRef<TextInput, TextInputProps>(function Input(props, ref) {
+  const { colors } = useShopAssistTheme()
+  const styles = useMemo(() => makeStyles(colors), [colors])
+  const { placeholderTextColor, style, ...rest } = props
   return (
     <TextInput
       ref={ref}
-      placeholderTextColor={colors.muted}
-      style={[styles.input, props.style]}
-      {...props}
+      placeholderTextColor={placeholderTextColor ?? colors.muted}
+      style={[styles.input, style]}
+      {...rest}
     />
   )
 })
@@ -57,6 +69,8 @@ export function Btn({
   accessibilityLabel?: string
 }) {
   const a11y = accessibilityLabel ?? label ?? 'Button'
+  const { colors } = useShopAssistTheme()
+  const styles = useMemo(() => makeStyles(colors), [colors])
   return (
     <Pressable
       onPress={onPress}
@@ -68,23 +82,33 @@ export function Btn({
         compact && styles.btnCompact,
         variant === 'ghost' && styles.btnGhost,
         variant === 'danger' && styles.btnDanger,
-        (disabled || pressed) && styles.btnPressed,
+        pressed && styles.btnPressed,
+        disabled && styles.btnDisabled,
       ]}
     >
-      {icon ?? (label ? <Text style={[styles.btnText, variant === 'ghost' && styles.btnGhostText]}>{label}</Text> : null)}
+      {icon ??
+        (label ? (
+          <Text style={[styles.btnText, variant === 'ghost' && styles.btnGhostText, disabled && styles.btnDisabledText]}>
+            {label}
+          </Text>
+        ) : null)}
     </Pressable>
   )
 }
 
 export function ErrorText({ children }: { children: string }) {
+  const { colors } = useShopAssistTheme()
+  const styles = useMemo(() => makeStyles(colors), [colors])
   return <Text style={styles.error}>{children}</Text>
 }
 
 export function Loading() {
+  const { colors } = useShopAssistTheme()
   return <ActivityIndicator color={colors.primary} style={{ marginVertical: 16 }} />
 }
 
-const styles = StyleSheet.create({
+function makeStyles(colors: ShopAssistColors) {
+  return StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: colors.bg,
@@ -112,7 +136,7 @@ const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: colors.inputBg,
-    borderWidth: 1,
+    borderWidth: colors.borderWidth,
     borderColor: colors.border,
     borderRadius: 8,
     paddingHorizontal: 12,
@@ -136,7 +160,7 @@ const styles = StyleSheet.create({
   },
   btnGhost: {
     backgroundColor: 'transparent',
-    borderWidth: 1,
+    borderWidth: colors.borderWidth,
     borderColor: colors.border,
   },
   btnDanger: {
@@ -144,6 +168,11 @@ const styles = StyleSheet.create({
   },
   btnPressed: {
     opacity: 0.85,
+  },
+  btnDisabled: {
+    backgroundColor: '#cbd5e1',
+    borderColor: '#cbd5e1',
+    opacity: 1,
   },
   btnText: {
     color: colors.primaryText,
@@ -153,9 +182,13 @@ const styles = StyleSheet.create({
   btnGhostText: {
     color: colors.text,
   },
+  btnDisabledText: {
+    color: '#64748b',
+  },
   error: {
     color: colors.danger,
     marginTop: 12,
     fontSize: 14,
   },
 })
+}

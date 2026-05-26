@@ -1,6 +1,6 @@
 import { Image } from 'expo-image'
 import { router } from 'expo-router'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   KeyboardAvoidingView,
   Platform,
@@ -11,10 +11,13 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuth } from '@/src/auth/AuthContext'
 import { Btn, ErrorText, FieldLabel, Input, Muted } from '@/src/components/ui'
-import { colors } from '@/src/theme'
+import type { ShopAssistColors } from '@/src/theme'
+import { useShopAssistTheme } from '@/src/themeContext'
 
 export default function LoginScreen() {
   const { login } = useAuth()
+  const { colors } = useShopAssistTheme()
+  const styles = useMemo(() => makeStyles(colors), [colors])
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [busy, setBusy] = useState(false)
@@ -25,7 +28,7 @@ export default function LoginScreen() {
     setBusy(true)
     try {
       await login(email, password)
-      router.replace('/search')
+      router.replace('/(tabs)')
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Login failed')
     } finally {
@@ -81,7 +84,8 @@ export default function LoginScreen() {
   )
 }
 
-const styles = StyleSheet.create({
+function makeStyles(colors: ShopAssistColors) {
+  return StyleSheet.create({
   safe: {
     flex: 1,
     backgroundColor: colors.bg,
@@ -111,3 +115,4 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 })
+}
