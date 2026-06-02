@@ -13,6 +13,19 @@ export interface AuthResponse {
   user: AuthUser
 }
 
+export interface StockAdjustmentRow {
+  _id: string
+  productId: string
+  productSku: string
+  fromStock: number
+  toStock: number
+  delta: number
+  changedByEmail: string
+  changedByDisplayName?: string | null
+  sourceApp: string
+  createdAt: string
+}
+
 export interface ProductRow {
   _id: string
   name: string

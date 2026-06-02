@@ -2,7 +2,7 @@ import { Stack, router, useLocalSearchParams } from 'expo-router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Alert, Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { apiFetch } from '@/src/api/client'
-import type { ProductRow } from '@/src/api/types'
+import type { ProductRow, StockAdjustmentRow } from '@/src/api/types'
 import { useAuth } from '@/src/auth/AuthContext'
 import { useShopAssistCart } from '@/src/cart/CartContext'
 import {
@@ -17,6 +17,25 @@ import {
 import { canEditPricingFields, canEditStockFields } from '@/src/permissions'
 import type { ShopAssistColors } from '@/src/theme'
 import { useShopAssistTheme } from '@/src/themeContext'
+
+function stockAdjustmentSourceLabel(sourceApp: string): string {
+  switch (sourceApp) {
+    case 'shop-assist':
+      return 'ShopAssist'
+    case 'back-office':
+      return 'Back Office'
+    case 'pos':
+      return 'POS'
+    case 'scan':
+      return 'Scan'
+    default:
+      return 'Unknown'
+  }
+}
+
+function stockAdjustmentUserLabel(row: StockAdjustmentRow): string {
+  return row.changedByDisplayName?.trim() || row.changedByEmail
+}
 
 export default function ProductScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
@@ -36,6 +55,26 @@ export default function ProductScreen() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
+  const [stockHistory, setStockHistory] = useState<StockAdjustmentRow[]>([])
+  const [stockHistoryBusy, setStockHistoryBusy] = useState(false)
+
+  const loadStockHistory = useCallback(async () => {
+    if (!id || !canStock) {
+      setStockHistory([])
+      return
+    }
+    setStockHistoryBusy(true)
+    try {
+      const rows = await apiFetch<StockAdjustmentRow[]>(
+        `/products/${encodeURIComponent(id)}/stock-adjustments?limit=10`,
+      )
+      setStockHistory(rows)
+    } catch {
+      setStockHistory([])
+    } finally {
+      setStockHistoryBusy(false)
+    }
+  }, [id, canStock])
 
   const load = useCallback(async () => {
     if (!id) return
@@ -58,6 +97,10 @@ export default function ProductScreen() {
   useEffect(() => {
     void load()
   }, [load])
+
+  useEffect(() => {
+    void loadStockHistory()
+  }, [loadStockHistory])
 
   useEffect(() => {
     if (!notice) return
@@ -103,6 +146,7 @@ export default function ProductScreen() {
       setPrice(String(updated.price))
       setStock(String(updated.stock))
       setNotice('Saved successfully')
+      void loadStockHistory()
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Save failed')
     } finally {
@@ -203,6 +247,25 @@ export default function ProductScreen() {
                     }}
                     keyboardType="number-pad"
                   />
+                  <FieldLabel>Recent stock changes</FieldLabel>
+                  {stockHistoryBusy ? (
+                    <Muted>Loading history…</Muted>
+                  ) : stockHistory.length === 0 ? (
+                    <Muted>No recorded stock changes yet.</Muted>
+                  ) : (
+                    stockHistory.map((row) => (
+                      <View key={row._id} style={styles.historyRow}>
+                        <Text style={styles.historyMeta}>
+                          {new Date(row.createdAt).toLocaleString()} · {stockAdjustmentUserLabel(row)} ·{' '}
+                          {stockAdjustmentSourceLabel(row.sourceApp)}
+                        </Text>
+                        <Text style={styles.historyDelta}>
+                          {row.fromStock} → {row.toStock} ({row.delta >= 0 ? '+' : ''}
+                          {row.delta})
+                        </Text>
+                      </View>
+                    ))
+                  )}
                 </>
               ) : (
                 <Muted>This item does not track inventory.</Muted>
@@ -279,6 +342,25 @@ function makeStyles(colors: ShopAssistColors) {
     fontSize: 15,
     fontWeight: '800',
     textAlign: 'center',
+  },
+  historyRow: {
+    marginBottom: 10,
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: colors.borderWidth,
+    borderColor: colors.border,
+    backgroundColor: colors.panel,
+  },
+  historyMeta: {
+    color: colors.muted,
+    fontSize: 13,
+    marginBottom: 4,
+  },
+  historyDelta: {
+    color: colors.text,
+    fontSize: 15,
+    fontWeight: '700',
+    fontVariant: ['tabular-nums'],
   },
 })
 }

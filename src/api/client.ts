@@ -101,6 +101,7 @@ export async function apiFetch<T>(path: string, init: RequestInit & { _retry?: b
 
   const token = isPublicAuthPath(path) ? null : getAccessToken()
   if (token) headers.set('Authorization', `Bearer ${token}`)
+  headers.set('X-Client-App', 'shop-assist')
 
   let res: Response
   try {
