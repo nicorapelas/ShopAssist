@@ -9,7 +9,9 @@ const DARK_THEME_LOGO = require('../../assets/images/logo-SA_land-dark.png')
 export function CogniPosHeaderLogo() {
   const { theme } = useShopAssistTheme()
   const logoSource =
-    theme === 'dark' || theme === 'ubuntu' || theme === 'elon' || theme === 'lego' ? DARK_THEME_LOGO : LIGHT_THEME_LOGO
+    theme === 'dark' || theme === 'ubuntu' || theme === 'elon' || theme === 'lego' || theme === 'cosmic'
+      ? DARK_THEME_LOGO
+      : LIGHT_THEME_LOGO
 
   return (
     <View style={styles.wrap}>

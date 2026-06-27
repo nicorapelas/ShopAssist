@@ -1,4 +1,4 @@
-export type ShopAssistTheme = 'dark' | 'light' | 'ubuntu' | 'elon' | 'lego' | 'jacobs'
+export type ShopAssistTheme = 'dark' | 'light' | 'ubuntu' | 'elon' | 'lego' | 'jacobs' | 'cosmic'
 
 export type ShopAssistColors = {
   bg: string
@@ -21,6 +21,7 @@ export const SHOP_ASSIST_THEME_OPTIONS: { id: ShopAssistTheme; label: string; hi
   { id: 'elon', label: 'Elon', hint: 'Old Glory blue & red - bold, minimal white' },
   { id: 'lego', label: 'Bricks', hint: 'Classic toy-brick reds, yellows & blues' },
   { id: 'jacobs', label: 'Jacobs', hint: 'Jacobs blue with a light workspace' },
+  { id: 'cosmic', label: 'Cosmic', hint: 'Pop!_OS Cosmic — charcoal with cyan accents' },
 ]
 
 export const SHOP_ASSIST_THEMES: Record<ShopAssistTheme, ShopAssistColors> = {
@@ -101,6 +102,19 @@ export const SHOP_ASSIST_THEMES: Record<ShopAssistTheme, ShopAssistColors> = {
     danger: '#dc2626',
     success: '#15803d',
     inputBg: '#ffffff',
+  },
+  cosmic: {
+    bg: '#161616',
+    panel: '#262626',
+    border: '#484848',
+    borderWidth: 1,
+    text: '#dedede',
+    muted: '#9e9e9e',
+    primary: '#63d0df',
+    primaryText: '#030303',
+    danger: '#fda1a0',
+    success: '#92cf9c',
+    inputBg: '#1b1b1b',
   },
 } as const
 

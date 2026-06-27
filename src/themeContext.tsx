@@ -13,7 +13,15 @@ type ShopAssistThemeContextValue = {
 const ShopAssistThemeContext = createContext<ShopAssistThemeContextValue | null>(null)
 
 function isTheme(value: string | null): value is ShopAssistTheme {
-  return value === 'dark' || value === 'light' || value === 'ubuntu' || value === 'elon' || value === 'lego' || value === 'jacobs'
+  return (
+    value === 'dark' ||
+    value === 'light' ||
+    value === 'ubuntu' ||
+    value === 'elon' ||
+    value === 'lego' ||
+    value === 'jacobs' ||
+    value === 'cosmic'
+  )
 }
 
 export function ShopAssistThemeProvider({ children }: { children: ReactNode }) {

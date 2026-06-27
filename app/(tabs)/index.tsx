@@ -264,13 +264,16 @@ export default function ScanScreen() {
 }
 
 function makeStyles(colors: ShopAssistColors, theme: ShopAssistTheme) {
-  const isHighContrastTheme = theme === 'dark' || theme === 'ubuntu' || theme === 'elon' || theme === 'lego'
+  const isHighContrastTheme =
+    theme === 'dark' || theme === 'ubuntu' || theme === 'elon' || theme === 'lego' || theme === 'cosmic'
   const tipBg =
     theme === 'lego'
       ? '#172554'
       : theme === 'ubuntu'
         ? '#3b164f'
-        : theme === 'elon'
+        : theme === 'cosmic'
+          ? '#2e2e2e'
+          : theme === 'elon'
           ? '#0f172a'
           : theme === 'dark'
             ? '#1e293b'

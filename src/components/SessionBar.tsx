@@ -33,13 +33,16 @@ export function SessionBar() {
 }
 
 function makeStyles(colors: ShopAssistColors, theme: ShopAssistTheme) {
-  const isHighContrastTheme = theme === 'dark' || theme === 'ubuntu' || theme === 'elon' || theme === 'lego'
+  const isHighContrastTheme =
+    theme === 'dark' || theme === 'ubuntu' || theme === 'elon' || theme === 'lego' || theme === 'cosmic'
   const barBg =
     theme === 'lego'
       ? '#7f1d1d'
       : theme === 'ubuntu'
         ? '#4c1d95'
-        : theme === 'elon'
+        : theme === 'cosmic'
+          ? '#262626'
+          : theme === 'elon'
           ? '#172554'
           : theme === 'dark'
             ? '#1e1b4b'

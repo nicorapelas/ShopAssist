@@ -22,7 +22,8 @@ export default function RootLayout() {
 
 function RootLayoutInner() {
   const { colors, theme } = useShopAssistTheme()
-  const darkStatusBar = theme === 'dark' || theme === 'ubuntu' || theme === 'elon' || theme === 'lego'
+  const darkStatusBar =
+    theme === 'dark' || theme === 'ubuntu' || theme === 'elon' || theme === 'lego' || theme === 'cosmic'
 
   return (
     <AppBootSplash>
