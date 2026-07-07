@@ -2,32 +2,35 @@
   "expo": {
     "name": "ShopAssist",
     "slug": "ShopAssist",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./assets/images/android-icon-foreground.png",
+    "icon": "./assets/images/appIcon.png",
     "scheme": "shopassist",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/logo-SA_Port-light.png",
+      "image": "./assets/images/logo-text_bottom1-dark.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#350d66"
     },
     "newArchEnabled": true,
     "ios": {
+      "bundleIdentifier": "com.jacobscycles.shopassist",
       "supportsTablet": true,
       "infoPlist": {
-        "NSCameraUsageDescription": "ShopAssist uses the camera to scan product barcodes."
+        "NSCameraUsageDescription": "ShopAssist uses the camera to scan product barcodes and photograph catalog items.",
+        "NSPhotoLibraryUsageDescription": "ShopAssist uses your photo library to add product catalog images."
       }
     },
     "android": {
+      "package": "com.jacobscycles.shopassist",
       "permissions": ["android.permission.CAMERA"],
+      "usesCleartextTraffic": true,
+      "softwareKeyboardLayoutMode": "resize",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "backgroundColor": "#350d66",
+        "foregroundImage": "./assets/images/appIcon.png"
       },
-      "edgeToEdgeEnabled": true,
+      "edgeToEdgeEnabled": false,
       "predictiveBackGestureEnabled": false
     },
     "web": {
@@ -38,22 +41,30 @@
       "expo-router",
       "expo-font",
       "expo-secure-store",
+      "expo-audio",
       [
         "expo-camera",
         {
-          "cameraPermission": "Allow ShopAssist to scan product barcodes."
+          "cameraPermission": "Allow ShopAssist to scan product barcodes and photograph catalog items."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow ShopAssist to choose product photos from your library.",
+          "cameraPermission": "Allow ShopAssist to photograph products for the catalog."
         }
       ],
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/logo-SA_Port-light.png",
-          "imageWidth": 240,
+          "image": "./assets/images/logo-text_bottom1-dark.png",
+          "imageWidth": 280,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
+          "backgroundColor": "#350d66",
           "dark": {
-            "image": "./assets/images/logo-SA_Port-light.png",
-            "backgroundColor": "#ffffff"
+            "image": "./assets/images/logo-text_bottom1-dark.png",
+            "backgroundColor": "#350d66"
           }
         }
       ]

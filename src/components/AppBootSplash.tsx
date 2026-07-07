@@ -1,8 +1,11 @@
 import { Image } from 'expo-image'
 import * as SplashScreen from 'expo-splash-screen'
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { useAuth } from '@/src/auth/AuthContext'
+import { authScreenLogoSize, authScreenLogoSource } from '@/src/auth/authScreenLogo'
+import { POS_SPLASH_BACKGROUND } from '@/src/constants/splashBranding'
+import { useShopAssistTheme } from '@/src/themeContext'
 
 /** Minimum time the branded overlay stays visible after the app is ready (ms). */
 const MIN_SPLASH_MS = 900
@@ -16,18 +19,22 @@ type AppBootSplashProps = {
 }
 
 /**
- * Shows ShopAssist logo on a branded neutral screen until auth storage is ready.
- * Works in Expo Go (native splash from app.json only applies to dev/production builds).
+ * Branded boot overlay — matches CogniPOS register launch (purple) with the auth-screen logo.
  */
 export function AppBootSplash({ children }: AppBootSplashProps) {
   const { ready } = useAuth()
+  const { theme } = useShopAssistTheme()
   const [overlayVisible, setOverlayVisible] = useState(true)
+
+  const logoSource = useMemo(() => authScreenLogoSource(theme), [theme])
+  const logoSize = useMemo(() => authScreenLogoSize(theme, false), [theme])
 
   useEffect(() => {
     if (!ready) return
     const hideTimer = setTimeout(() => {
-      void SplashScreen.hideAsync().finally(() => {
-        setOverlayVisible(false)
+      setOverlayVisible(false)
+      void SplashScreen.hideAsync().catch(() => {
+        /* Expo Go may reject; overlay is already gone. */
       })
     }, MIN_SPLASH_MS)
     return () => clearTimeout(hideTimer)
@@ -39,8 +46,8 @@ export function AppBootSplash({ children }: AppBootSplashProps) {
       {overlayVisible ? (
         <View style={styles.overlay}>
           <Image
-            source={require('../../assets/images/logo-SA_Port-light.png')}
-            style={styles.logo}
+            source={logoSource}
+            style={{ width: logoSize.width, height: logoSize.height }}
             contentFit="contain"
             accessibilityLabel="ShopAssist logo"
           />
@@ -55,13 +62,9 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     zIndex: 9999,
     elevation: 9999,
-    backgroundColor: '#dbcfb4',
+    backgroundColor: POS_SPLASH_BACKGROUND,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 32,
-  },
-  logo: {
-    width: 220,
-    height: 286,
   },
 })

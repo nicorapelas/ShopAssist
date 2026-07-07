@@ -5,7 +5,7 @@ import { getApiBaseUrl } from '@/src/config/serverUrl'
 import { useAuth } from '@/src/auth/AuthContext'
 
 export default function Index() {
-  const { ready, session } = useAuth()
+  const { ready, enrollment, session } = useAuth()
   const [hasUrl, setHasUrl] = useState<boolean | null>(null)
 
   useEffect(() => {
@@ -24,6 +24,7 @@ export default function Index() {
   }
 
   if (!hasUrl) return <Redirect href="/setup" />
+  if (!enrollment) return <Redirect href="/enroll" />
   if (!session) return <Redirect href="/login" />
   return <Redirect href="/(tabs)" />
 }

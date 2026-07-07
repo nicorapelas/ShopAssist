@@ -3,11 +3,12 @@ import { useEffect, useState } from 'react'
 import { KeyboardAvoidingView, Platform, ScrollView } from 'react-native'
 import { testServerConnection } from '@/src/api/client'
 import { Btn, ErrorText, FieldLabel, Input, Muted, Screen, Title } from '@/src/components/ui'
-import { DEFAULT_API_BASE, getApiBaseUrl, normalizeApiBaseInput, setApiBaseUrl } from '@/src/config/serverUrl'
+import { DEFAULT_API_BASE, DEV_API_BASE, PROD_API_BASE, getApiBaseUrl, normalizeApiBaseInput, setApiBaseUrl } from '@/src/config/serverUrl'
 import { useAuth } from '@/src/auth/AuthContext'
+import { loadEnrollment } from '@/src/auth/enrollmentStorage'
 
 export default function SetupScreen() {
-  const { session } = useAuth()
+  const { session, refreshEnrollment, resetStoreBinding } = useAuth()
   const [url, setUrl] = useState(DEFAULT_API_BASE)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -31,10 +32,21 @@ export default function SetupScreen() {
     setBusy(true)
     try {
       await testServerConnection(normalized)
+      const previous = await getApiBaseUrl()
       await setApiBaseUrl(normalized)
+      if (previous && previous !== normalized) {
+        await resetStoreBinding()
+      } else {
+        await refreshEnrollment()
+      }
       setNotice('Connected to tunnel / server')
       if (andContinue) {
-        router.replace(session ? '/search' : '/login')
+        const enrolled = await loadEnrollment()
+        if (enrolled && enrolled.storeEndpoint === normalized.replace(/\/$/, '')) {
+          router.replace(session ? '/(tabs)' : '/login')
+        } else {
+          router.replace('/enroll')
+        }
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Connection failed')
@@ -52,8 +64,9 @@ export default function SetupScreen() {
         <ScrollView keyboardShouldPersistTaps="handled">
           <Title>ShopAssist</Title>
           <Muted>
-            Connect to your Jacobs Cycles server via Cloudflare tunnel. Default: api-dev.jacobscycles.com
-            (server and cloudflared must be running on Steve).
+            {__DEV__
+              ? `Development: ${DEV_API_BASE} (Steve + cloudflared). Production: ${PROD_API_BASE} (Dell).`
+              : `Production store API: ${PROD_API_BASE} via Cloudflare tunnel on jacobs-server.`}
           </Muted>
           <FieldLabel>Server API URL</FieldLabel>
           <Input

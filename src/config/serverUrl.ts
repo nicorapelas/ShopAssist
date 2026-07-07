@@ -1,7 +1,13 @@
 import * as SecureStore from 'expo-secure-store'
 
-/** Cloudflare tunnel → Steve dev API (override in Server setup). */
-export const DEFAULT_API_BASE = 'https://api-dev.jacobscycles.com/api'
+/** Cloudflare tunnel → production API on jacobs-server (Dell). */
+export const PROD_API_BASE = 'https://api.jacobscycles.com/api'
+
+/** Cloudflare tunnel → Steve dev API. */
+export const DEV_API_BASE = 'https://api-dev.jacobscycles.com/api'
+
+/** Release APK uses prod; Expo Go / dev uses api-dev. */
+export const DEFAULT_API_BASE = __DEV__ ? DEV_API_BASE : PROD_API_BASE
 
 const KEY = 'shopassist-api-base'
 

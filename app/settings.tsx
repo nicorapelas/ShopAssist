@@ -84,7 +84,7 @@ export default function SettingsScreen() {
           </View>
           <View style={styles.menuText}>
             <Text style={styles.menuTitle}>Account</Text>
-            <Text style={styles.menuCopy}>View signed-in user, catalog sync, and sign out.</Text>
+            <Text style={styles.menuCopy}>Staff session, device binding, and sign out.</Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color={colors.muted} />
         </Pressable>

@@ -5,6 +5,7 @@ import { apiFetch } from '@/src/api/client'
 import type { ProductRow, StockAdjustmentRow } from '@/src/api/types'
 import { useAuth } from '@/src/auth/AuthContext'
 import { useShopAssistCart } from '@/src/cart/CartContext'
+import { ProductPhotoPanel } from '@/src/components/ProductPhotoPanel'
 import {
   Btn,
   ErrorText,
@@ -195,6 +196,16 @@ export default function ProductScreen() {
               {`Lay-by reserved: ${product.layByReservedQty} · Available: ${product.availableQty ?? '—'}`}
             </Muted>
           ) : null}
+
+          <ProductPhotoPanel
+            productId={product._id}
+            photoRevision={product.photoRevision ?? 0}
+            canEdit={canStock}
+            onPhotoChange={(photoRevision, hasPhoto) => {
+              setProduct((prev) => (prev ? { ...prev, photoRevision, hasPhoto } : prev))
+              setNotice(hasPhoto ? 'Image updated' : 'Image removed')
+            }}
+          />
 
           {canPricing ? (
             <>

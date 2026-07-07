@@ -6,7 +6,7 @@ import type { ShopAssistColors, ShopAssistTheme } from '@/src/theme'
 import { useShopAssistTheme } from '@/src/themeContext'
 
 export function SessionBar() {
-  const { user, logout } = useAuth()
+  const { user, logoutStaff } = useAuth()
   const { colors, theme } = useShopAssistTheme()
   const styles = useMemo(() => makeStyles(colors, theme), [colors, theme])
   if (!user) return null
@@ -22,7 +22,7 @@ export function SessionBar() {
         accessibilityRole="button"
         accessibilityLabel="Sign out"
         onPress={() => {
-          void logout().then(() => router.replace('/login'))
+          void logoutStaff().then(() => router.replace('/login'))
         }}
         style={({ pressed }) => [styles.signOutButton, pressed && styles.pressed]}
       >

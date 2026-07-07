@@ -11,7 +11,7 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: true,
-        headerLeft: () => <CogniPosHeaderLogo />,
+        headerLeft: () => <CogniPosHeaderLogo paddingLeft={20} />,
         headerRight: () => (
           <Pressable
             accessibilityRole="button"

@@ -1,27 +1,53 @@
-import { DEFAULT_API_BASE, getApiBaseUrl } from '../config/serverUrl'
+import { DEFAULT_API_BASE, DEV_API_BASE, getApiBaseUrl } from '../config/serverUrl'
+import { configureProductPhotoAuth } from './productPhoto'
 import type { AuthResponse } from './types'
 
 export type ApiErrorBody = { message?: string; error?: string }
 
 let getAccessToken: () => string | null = () => null
 let getRefreshToken: () => string | null = () => null
+let getDeviceToken: () => string | null = () => null
+let getStoreEndpoint: () => string | null = () => null
 let onTokensRefreshed: (tokens: { accessToken: string; refreshToken: string }) => void = () => {}
 let onAuthFailed: () => void = () => {}
+let onDeviceAuthFailed: () => void = () => {}
 
 export function configureApiAuth(handlers: {
   getAccessToken: () => string | null
   getRefreshToken: () => string | null
+  getDeviceToken?: () => string | null
+  getStoreEndpoint?: () => string | null
   onTokensRefreshed: (tokens: { accessToken: string; refreshToken: string }) => void
   onAuthFailed: () => void
+  onDeviceAuthFailed?: () => void
 }) {
   getAccessToken = handlers.getAccessToken
   getRefreshToken = handlers.getRefreshToken
+  getDeviceToken = handlers.getDeviceToken ?? (() => null)
+  getStoreEndpoint = handlers.getStoreEndpoint ?? (() => null)
   onTokensRefreshed = handlers.onTokensRefreshed
   onAuthFailed = handlers.onAuthFailed
+  onDeviceAuthFailed = handlers.onDeviceAuthFailed ?? (() => {})
+  configureProductPhotoAuth({
+    getAccessToken: handlers.getAccessToken,
+    getDeviceToken: handlers.getDeviceToken ?? (() => null),
+    getStoreEndpoint: handlers.getStoreEndpoint ?? (() => null),
+    refreshTokens,
+  })
 }
 
 function isPublicAuthPath(path: string) {
-  return path.startsWith('/auth/login') || path.startsWith('/auth/refresh')
+  return (
+    path.startsWith('/auth/login') ||
+    path.startsWith('/auth/refresh') ||
+    path === '/shop-assist/devices/enroll'
+  )
+}
+
+function needsDeviceToken(path: string) {
+  if (path === '/shop-assist/devices/enroll') return false
+  if (path.startsWith('/auth/login')) return true
+  return !isPublicAuthPath(path)
 }
 
 function responseLooksLikeHtml(text: string, contentType: string): boolean {
@@ -76,7 +102,12 @@ async function refreshTokens(): Promise<boolean> {
   try {
     const res = await fetch(`${base}/auth/refresh`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Client-App': 'shop-assist',
+        ...(getDeviceToken() ? { 'X-Device-Token': getDeviceToken()! } : {}),
+        ...(getStoreEndpoint() ? { 'X-Store-Endpoint': getStoreEndpoint()! } : {}),
+      },
       body: JSON.stringify({ refreshToken }),
     })
     const text = await res.text()
@@ -103,6 +134,15 @@ export async function apiFetch<T>(path: string, init: RequestInit & { _retry?: b
   if (token) headers.set('Authorization', `Bearer ${token}`)
   headers.set('X-Client-App', 'shop-assist')
 
+  if (needsDeviceToken(path)) {
+    const deviceToken = getDeviceToken()
+    if (deviceToken) {
+      headers.set('X-Device-Token', deviceToken)
+      const storeEndpoint = getStoreEndpoint()
+      if (storeEndpoint) headers.set('X-Store-Endpoint', storeEndpoint)
+    }
+  }
+
   let res: Response
   try {
     res = await fetch(url, { ...init, headers })
@@ -120,6 +160,11 @@ export async function apiFetch<T>(path: string, init: RequestInit & { _retry?: b
   const data = parseResponseBody(text, res)
 
   if (res.status === 401 && !init._retry && !isPublicAuthPath(path)) {
+    const message = (data as ApiErrorBody | null)?.message ?? ''
+    if (message.toLowerCase().includes('device not enrolled') || message.toLowerCase().includes('revoked')) {
+      onDeviceAuthFailed()
+      throw new Error(message || 'This device is not enrolled for ShopAssist')
+    }
     const refreshed = await refreshTokens()
     if (refreshed) {
       return apiFetch<T>(path, { ...init, _retry: true })
@@ -136,8 +181,8 @@ export async function apiFetch<T>(path: string, init: RequestInit & { _retry?: b
 function cloudflareTunnelHint(status: number): string {
   if (status === 530 || status === 502 || status === 503) {
     return (
-      ' Cloudflare cannot reach the shop PC (tunnel or API offline). On Steve run: ' +
-      'npm run dev in server/, then cloudflared tunnel run jacobs-cycles_tunnel.'
+      ' Cloudflare cannot reach the shop server (tunnel or API offline). On jacobs-server check: ' +
+      'systemctl status electropos-server electropos-cloudflared. Dev tunnel (Steve): npm run dev + cloudflared tunnel run jacobs-cycles_tunnel.'
     )
   }
   return ''

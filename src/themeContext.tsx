@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { SHOP_ASSIST_THEMES, type ShopAssistColors, type ShopAssistTheme } from './theme'
 
-const THEME_KEY = 'shopassist-theme-v1'
+const THEME_KEY = 'shopassist-theme-v2'
 
 type ShopAssistThemeContextValue = {
   theme: ShopAssistTheme
@@ -25,7 +25,7 @@ function isTheme(value: string | null): value is ShopAssistTheme {
 }
 
 export function ShopAssistThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<ShopAssistTheme>('light')
+  const [theme, setThemeState] = useState<ShopAssistTheme>('cosmic')
 
   useEffect(() => {
     void (async () => {
