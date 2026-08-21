@@ -15,11 +15,11 @@ const LOGO_MS = 220
 
 export default function EnrollScreen() {
   const { enrollDevice } = useAuth()
-  const { colors, theme } = useShopAssistTheme()
+  const { colors } = useShopAssistTheme()
   const styles = useMemo(() => makeStyles(colors), [colors])
-  const logoSource = useMemo(() => authScreenLogoSource(theme), [theme])
-  const logoFull = authScreenLogoSize(theme, false)
-  const logoCompact = authScreenLogoSize(theme, true)
+  const logoSource = useMemo(() => authScreenLogoSource(), [])
+  const logoFull = authScreenLogoSize(false)
+  const logoCompact = authScreenLogoSize(true)
 
   const focusDepthRef = useRef(0)
   const logoProgress = useSharedValue(0)
@@ -81,7 +81,7 @@ export default function EnrollScreen() {
               source={logoSource}
               style={styles.logoImage}
               contentFit="contain"
-              accessibilityLabel="ShopAssist"
+              accessibilityLabel="CogniPOS"
             />
           </Animated.View>
         </View>
@@ -114,14 +114,14 @@ export default function EnrollScreen() {
           <Input
             value={label}
             onChangeText={setLabel}
-            placeholder="e.g. Floor iPhone"
+            placeholder="e.g. Floor phone"
             autoCapitalize="words"
             onFocus={() => bumpLogo(true)}
             onBlur={() => bumpLogo(false)}
           />
           {error ? <ErrorText>{error}</ErrorText> : null}
-          <Btn label={busy ? 'Enrolling…' : 'Enroll this device'} onPress={() => void submit()} disabled={busy} />
-          <Btn label="Change server" onPress={() => router.push('/setup')} variant="ghost" />
+          <Btn label={busy ? 'Enrolling…' : 'Bind this phone'} onPress={() => void submit()} disabled={busy} />
+          <Btn label="Change shop API" onPress={() => router.push('/setup')} variant="ghost" />
         </View>
       </AuthKeyboardScroll>
     </SafeAreaView>

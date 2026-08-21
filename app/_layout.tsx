@@ -7,7 +7,6 @@ import { AuthProvider } from '@/src/auth/AuthContext'
 import { AuthSessionRedirector } from '@/src/auth/AuthSessionRedirector'
 import { CartProvider } from '@/src/cart/CartContext'
 import { AppBootSplash } from '@/src/components/AppBootSplash'
-import { CogniPosHeaderLogo } from '@/src/components/CogniPosHeaderLogo'
 import { ShopAssistThemeProvider, useShopAssistTheme } from '@/src/themeContext'
 
 export default function RootLayout() {
@@ -23,9 +22,7 @@ export default function RootLayout() {
 }
 
 function RootLayoutInner() {
-  const { colors, theme } = useShopAssistTheme()
-  const darkStatusBar =
-    theme === 'dark' || theme === 'ubuntu' || theme === 'elon' || theme === 'lego' || theme === 'cosmic'
+  const { colors } = useShopAssistTheme()
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -36,23 +33,26 @@ function RootLayoutInner() {
         screenOptions={{
           headerStyle: { backgroundColor: colors.panel },
           headerTintColor: colors.text,
-          headerTitleStyle: { fontWeight: '600' },
-          headerLeft: () => <CogniPosHeaderLogo />,
+          headerTitleStyle: { fontWeight: '700' },
+          headerShadowVisible: false,
+          headerBackTitle: 'Back',
           contentStyle: { backgroundColor: colors.bg },
         }}
       >
         <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="setup" options={{ title: 'Server' }} />
-        <Stack.Screen name="settings" options={{ title: 'Settings' }} />
-        <Stack.Screen name="account" options={{ title: 'Account' }} />
+        <Stack.Screen name="setup" options={{ title: 'Shop API' }} />
+        <Stack.Screen name="settings" options={{ headerShown: false }} />
+        <Stack.Screen name="account" options={{ headerShown: false }} />
         <Stack.Screen name="enroll" options={{ headerShown: false }} />
         <Stack.Screen name="login" options={{ headerShown: false }} />
-        <Stack.Screen name="search" options={{ headerShown: true }} />
-        <Stack.Screen name="product/[id]" options={{ headerShown: true }} />
+        <Stack.Screen name="search" options={{ headerShown: true, title: 'Search' }} />
+        <Stack.Screen name="product/[id]" options={{ headerShown: true, title: 'Product' }} />
+        <Stack.Screen name="new-invoice" options={{ headerShown: true, title: 'New invoice' }} />
+        <Stack.Screen name="sale/[id]" options={{ headerShown: true, title: 'Invoice' }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
         </Stack>
-        <StatusBar style={darkStatusBar ? 'light' : 'dark'} />
+        <StatusBar style="dark" />
         </AppBootSplash>
       </KeyboardProvider>
     </GestureHandlerRootView>

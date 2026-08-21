@@ -1,16 +1,16 @@
 {
   "expo": {
-    "name": "ShopAssist",
+    "name": "CogniPOS",
     "slug": "ShopAssist",
     "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/appIcon.png",
     "scheme": "shopassist",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/images/logo-text_bottom1-dark.png",
+      "image": "./assets/images/LogoCosmic.png",
       "resizeMode": "contain",
-      "backgroundColor": "#350d66"
+      "backgroundColor": "#0f766e"
     },
     "newArchEnabled": true,
     "ios": {
@@ -27,7 +27,7 @@
       "usesCleartextTraffic": true,
       "softwareKeyboardLayoutMode": "resize",
       "adaptiveIcon": {
-        "backgroundColor": "#350d66",
+        "backgroundColor": "#0f766e",
         "foregroundImage": "./assets/images/appIcon.png"
       },
       "edgeToEdgeEnabled": false,
@@ -58,13 +58,13 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/logo-text_bottom1-dark.png",
-          "imageWidth": 280,
+          "image": "./assets/images/LogoCosmic.png",
+          "imageWidth": 180,
           "resizeMode": "contain",
-          "backgroundColor": "#350d66",
+          "backgroundColor": "#0f766e",
           "dark": {
-            "image": "./assets/images/logo-text_bottom1-dark.png",
-            "backgroundColor": "#350d66"
+            "image": "./assets/images/LogoCosmic.png",
+            "backgroundColor": "#0f766e"
           }
         }
       ]

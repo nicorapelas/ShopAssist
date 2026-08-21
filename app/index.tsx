@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { Loading, Screen } from '@/src/components/ui'
 import { getApiBaseUrl } from '@/src/config/serverUrl'
 import { useAuth } from '@/src/auth/AuthContext'
+import { landingHref } from '@/src/nav/modules'
 
 export default function Index() {
   const { ready, enrollment, session } = useAuth()
@@ -26,5 +27,5 @@ export default function Index() {
   if (!hasUrl) return <Redirect href="/setup" />
   if (!enrollment) return <Redirect href="/enroll" />
   if (!session) return <Redirect href="/login" />
-  return <Redirect href="/(tabs)" />
+  return <Redirect href={landingHref(session.user)} />
 }

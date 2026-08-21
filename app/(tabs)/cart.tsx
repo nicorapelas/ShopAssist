@@ -16,7 +16,6 @@ import { createShopAssistCart } from '@/src/api/shopAssistCarts'
 import type { ProductRow } from '@/src/api/types'
 import { useShopAssistCart } from '@/src/cart/CartContext'
 import { BarcodeScannerModal } from '@/src/components/BarcodeScannerModal'
-import { SessionBar } from '@/src/components/SessionBar'
 import { Btn, ErrorText, Input, Loading, Screen } from '@/src/components/ui'
 import type { ShopAssistColors } from '@/src/theme'
 import { useShopAssistTheme } from '@/src/themeContext'
@@ -111,7 +110,6 @@ export default function CartScreen() {
 
   return (
     <Screen style={styles.screen}>
-      <SessionBar />
       <ScrollView
         ref={scrollRef}
         keyboardShouldPersistTaps="handled"
@@ -122,9 +120,9 @@ export default function CartScreen() {
           <View style={styles.heroIcon}>
             <Ionicons name="cart-outline" size={30} color={colors.primary} />
           </View>
-          <Text style={styles.heroTitle}>ShopAssist Cart</Text>
+          <Text style={styles.heroTitle}>Till cart</Text>
           <Text style={styles.heroCopy}>
-            Scan items while walking the floor, generate a QR code, then import this cart at POS.
+            Scan or search to add items, then show the QR at the till.
           </Text>
           <Btn
             label="Scan item"
@@ -233,20 +231,20 @@ export default function CartScreen() {
           <View style={styles.emptyCart}>
             <Ionicons name="basket-outline" size={28} color={colors.muted} />
             <Text style={styles.emptyTitle}>No items yet</Text>
-            <Text style={styles.emptyCopy}>Scan or search for items to prepare a POS cart.</Text>
+            <Text style={styles.emptyCopy}>Scan or search to add items, then show the QR at the till.</Text>
           </View>
         )}
 
         {lines.length ? (
           <>
             <Btn
-              label={saving ? 'Generating...' : generatedCart ? 'QR ready' : 'Generate POS QR'}
+              label={saving ? 'Generating...' : generatedCart ? 'QR ready' : 'Show QR for till'}
               onPress={() => void generateQr()}
               disabled={saving || Boolean(generatedCart)}
             />
             {saving ? <Text style={styles.qrStatus}>Creating secure cart token...</Text> : null}
             {generatedCart?.qrPayload ? (
-              <Text style={styles.qrStatus}>QR code generated below. Scan it at the POS.</Text>
+              <Text style={styles.qrStatus}>Show this QR at the till.</Text>
             ) : null}
             {generatedCart && !generatedCart.qrPayload ? (
               <Text style={styles.qrWarning}>Cart was created, but the server did not return a QR payload.</Text>
@@ -258,7 +256,7 @@ export default function CartScreen() {
 
         {generatedCart?.qrPayload ? (
           <View style={styles.qrCard}>
-            <Text style={styles.qrTitle}>Scan this at POS</Text>
+            <Text style={styles.qrTitle}>Scan this at the till</Text>
             <View style={styles.qrWrap}>
               <QRCode value={generatedCart.qrPayload} size={220} />
             </View>

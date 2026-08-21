@@ -177,7 +177,7 @@ function makeStyles(colors: ShopAssistColors) {
   btnText: {
     color: colors.primaryText,
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   btnGhostText: {
     color: colors.text,

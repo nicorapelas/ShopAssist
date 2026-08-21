@@ -1,9 +1,7 @@
 import { Image } from 'expo-image'
 import { Platform, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native'
-import { useShopAssistTheme } from '@/src/themeContext'
 
-const LIGHT_THEME_LOGO = require('../../assets/images/logo-text_land-light.png')
-const DARK_THEME_LOGO = require('../../assets/images/logo-SA_land-dark.png')
+const COSMIC_MARK = require('../../assets/images/LogoCosmic.png')
 
 type Props = {
   /** Extra inset from the left edge of the header (e.g. dashboard tabs). */
@@ -11,14 +9,8 @@ type Props = {
   style?: StyleProp<ViewStyle>
 }
 
-/** ShopAssist wordmark for stack headers. */
+/** Small Cosmic mark — Home and Account headers only. */
 export function CogniPosHeaderLogo({ paddingLeft = 0, style }: Props) {
-  const { theme } = useShopAssistTheme()
-  const logoSource =
-    theme === 'dark' || theme === 'ubuntu' || theme === 'elon' || theme === 'lego' || theme === 'cosmic'
-      ? DARK_THEME_LOGO
-      : LIGHT_THEME_LOGO
-
   const wrapStyle =
     paddingLeft > 0
       ? {
@@ -30,10 +22,10 @@ export function CogniPosHeaderLogo({ paddingLeft = 0, style }: Props) {
   return (
     <View style={[styles.wrap, wrapStyle, style]}>
       <Image
-        source={logoSource}
+        source={COSMIC_MARK}
         style={styles.logo}
         contentFit="contain"
-        accessibilityLabel="ShopAssist"
+        accessibilityLabel="CogniPOS"
       />
     </View>
   )
@@ -47,7 +39,7 @@ const styles = StyleSheet.create({
     paddingLeft: 0,
   },
   logo: {
-    width: 156,
-    height: 36,
+    width: 36,
+    height: 40,
   },
 })

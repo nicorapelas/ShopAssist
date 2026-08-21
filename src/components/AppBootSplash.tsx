@@ -5,7 +5,6 @@ import { StyleSheet, View } from 'react-native'
 import { useAuth } from '@/src/auth/AuthContext'
 import { authScreenLogoSize, authScreenLogoSource } from '@/src/auth/authScreenLogo'
 import { POS_SPLASH_BACKGROUND } from '@/src/constants/splashBranding'
-import { useShopAssistTheme } from '@/src/themeContext'
 
 /** Minimum time the branded overlay stays visible after the app is ready (ms). */
 const MIN_SPLASH_MS = 900
@@ -19,15 +18,14 @@ type AppBootSplashProps = {
 }
 
 /**
- * Branded boot overlay — matches CogniPOS register launch (purple) with the auth-screen logo.
+ * Branded boot overlay — teal splash with the Cosmic mark.
  */
 export function AppBootSplash({ children }: AppBootSplashProps) {
   const { ready } = useAuth()
-  const { theme } = useShopAssistTheme()
   const [overlayVisible, setOverlayVisible] = useState(true)
 
-  const logoSource = useMemo(() => authScreenLogoSource(theme), [theme])
-  const logoSize = useMemo(() => authScreenLogoSize(theme, false), [theme])
+  const logoSource = useMemo(() => authScreenLogoSource(), [])
+  const logoSize = useMemo(() => authScreenLogoSize(false), [])
 
   useEffect(() => {
     if (!ready) return
@@ -49,7 +47,7 @@ export function AppBootSplash({ children }: AppBootSplashProps) {
             source={logoSource}
             style={{ width: logoSize.width, height: logoSize.height }}
             contentFit="contain"
-            accessibilityLabel="ShopAssist logo"
+            accessibilityLabel="CogniPOS logo"
           />
         </View>
       ) : null}

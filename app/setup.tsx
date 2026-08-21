@@ -3,9 +3,10 @@ import { useEffect, useState } from 'react'
 import { KeyboardAvoidingView, Platform, ScrollView } from 'react-native'
 import { testServerConnection } from '@/src/api/client'
 import { Btn, ErrorText, FieldLabel, Input, Muted, Screen, Title } from '@/src/components/ui'
-import { DEFAULT_API_BASE, DEV_API_BASE, PROD_API_BASE, getApiBaseUrl, normalizeApiBaseInput, setApiBaseUrl } from '@/src/config/serverUrl'
+import { DEFAULT_API_BASE, getApiBaseUrl, normalizeApiBaseInput, setApiBaseUrl } from '@/src/config/serverUrl'
 import { useAuth } from '@/src/auth/AuthContext'
 import { loadEnrollment } from '@/src/auth/enrollmentStorage'
+import { landingHref } from '@/src/nav/modules'
 
 export default function SetupScreen() {
   const { session, refreshEnrollment, resetStoreBinding } = useAuth()
@@ -26,7 +27,7 @@ export default function SetupScreen() {
     setNotice(null)
     const normalized = normalizeApiBaseInput(url)
     if (!normalized) {
-      setError('Enter your server API URL')
+      setError('Enter your shop API URL')
       return
     }
     setBusy(true)
@@ -39,11 +40,11 @@ export default function SetupScreen() {
       } else {
         await refreshEnrollment()
       }
-      setNotice('Connected to tunnel / server')
+      setNotice('Connected to shop API')
       if (andContinue) {
         const enrolled = await loadEnrollment()
         if (enrolled && enrolled.storeEndpoint === normalized.replace(/\/$/, '')) {
-          router.replace(session ? '/(tabs)' : '/login')
+          router.replace(session ? landingHref(session.user) : '/login')
         } else {
           router.replace('/enroll')
         }
@@ -62,13 +63,9 @@ export default function SetupScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <ScrollView keyboardShouldPersistTaps="handled">
-          <Title>ShopAssist</Title>
-          <Muted>
-            {__DEV__
-              ? `Development: ${DEV_API_BASE} (Steve + cloudflared). Production: ${PROD_API_BASE} (Dell).`
-              : `Production store API: ${PROD_API_BASE} via Cloudflare tunnel on jacobs-server.`}
-          </Muted>
-          <FieldLabel>Server API URL</FieldLabel>
+          <Title>Shop API</Title>
+          <Muted>Enter this shop’s API URL (https://…/api), then Test and Save.</Muted>
+          <FieldLabel>Shop API URL</FieldLabel>
           <Input
             value={url}
             onChangeText={setUrl}

@@ -70,7 +70,7 @@ function deviceMeta() {
 
 async function assertStaffSession(res: AuthResponse) {
   if (!canUseShopAssist(res.user)) {
-    throw new Error('This account needs catalog.read permission.')
+    throw new Error('This account needs catalog.read or sales access.')
   }
   const bundle: StoredSession = {
     accessToken: res.accessToken,

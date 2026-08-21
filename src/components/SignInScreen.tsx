@@ -18,14 +18,14 @@ const LOGO_MS = 220
 
 export function SignInScreen() {
   const { loginBadge, loginPassword } = useAuth()
-  const { colors, theme } = useShopAssistTheme()
+  const { colors } = useShopAssistTheme()
   const styles = useMemo(() => makeStyles(colors), [colors])
 
   const focusDepthRef = useRef(0)
 
-  const logoSource = authScreenLogoSource(theme)
-  const logoFull = authScreenLogoSize(theme, false)
-  const logoCompact = authScreenLogoSize(theme, true)
+  const logoSource = authScreenLogoSource()
+  const logoFull = authScreenLogoSize(false)
+  const logoCompact = authScreenLogoSize(true)
 
   const logoProgress = useSharedValue(0)
   const logoFullW = useSharedValue(logoFull.width)
@@ -116,13 +116,13 @@ export function SignInScreen() {
               source={logoSource}
               style={styles.logoImage}
               contentFit="contain"
-              accessibilityLabel="ShopAssist"
+              accessibilityLabel="CogniPOS"
             />
           </Animated.View>
         </View>
 
         <View style={styles.form}>
-          <Muted>Scan your staff badge or sign in with password. Requires catalog.read on your account.</Muted>
+          <Muted>Scan your staff badge or sign in with password.</Muted>
 
           <View style={styles.modeRow}>
             <Pressable
@@ -197,7 +197,7 @@ export function SignInScreen() {
           )}
 
           {error ? <ErrorText>{error}</ErrorText> : null}
-          <Btn label="Change server" onPress={() => router.push('/setup')} variant="ghost" />
+          <Btn label="Change shop API" onPress={() => router.push('/setup')} variant="ghost" />
         </View>
       </AuthKeyboardScroll>
 

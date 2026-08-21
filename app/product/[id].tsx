@@ -289,13 +289,12 @@ export default function ProductScreen() {
           {error ? <ErrorText>{error}</ErrorText> : null}
 
           <Btn
-            label="Add to cart"
+            label="Add to till cart"
             variant="ghost"
             onPress={() => {
               addProduct(product)
-              setNotice('Added to cart')
+              setNotice('Added to till cart')
             }}
-            disabled={!canStock}
           />
 
           {(canStock || canPricing) && (

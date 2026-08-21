@@ -1,29 +1,27 @@
 import { Ionicons } from '@expo/vector-icons'
-import { router, Tabs } from 'expo-router'
-import { Pressable, StyleSheet } from 'react-native'
+import { Tabs } from 'expo-router'
 import { HapticTab } from '@/components/haptic-tab'
 import { CogniPosHeaderLogo } from '@/src/components/CogniPosHeaderLogo'
+import { useAuth } from '@/src/auth/AuthContext'
+import { shouldSkipHome } from '@/src/nav/modules'
+import { canUseCatalog, canUseInvoices } from '@/src/permissions'
 import { useShopAssistTheme } from '@/src/themeContext'
 
 export default function TabLayout() {
   const { colors } = useShopAssistTheme()
+  const { user } = useAuth()
+  const skipHome = shouldSkipHome(user)
+  const showCatalog = canUseCatalog(user)
+  const showInvoices = canUseInvoices(user)
+
   return (
     <Tabs
       screenOptions={{
         headerShown: true,
-        headerLeft: () => <CogniPosHeaderLogo paddingLeft={20} />,
-        headerRight: () => (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Open settings"
-            onPress={() => router.push('/settings')}
-            style={styles.settingsButton}
-          >
-            <Ionicons name="settings-outline" size={24} color={colors.primary} />
-          </Pressable>
-        ),
-        headerTitle: '',
+        headerTitleStyle: { fontWeight: '700', fontSize: 17 },
         headerStyle: { backgroundColor: colors.panel },
+        headerShadowVisible: false,
+        headerTintColor: colors.text,
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.muted,
         tabBarStyle: {
@@ -46,31 +44,54 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
+          title: 'CogniPOS',
+          href: skipHome ? null : '/(tabs)',
+          headerLeft: () => <CogniPosHeaderLogo paddingLeft={20} />,
+          tabBarIcon: ({ color, size }) => <Ionicons name="home-outline" size={size} color={color} />,
+          tabBarLabel: 'Home',
+        }}
+      />
+      <Tabs.Screen
+        name="catalog"
+        options={{
           title: 'Catalog',
+          href: showCatalog ? '/(tabs)/catalog' : null,
+          headerLeft: () => null,
           tabBarIcon: ({ color, size }) => <Ionicons name="cube-outline" size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="invoices"
+        options={{
+          title: 'Invoices',
+          href: showInvoices ? '/(tabs)/invoices' : null,
+          headerLeft: () => null,
+          tabBarIcon: ({ color, size }) => <Ionicons name="receipt-outline" size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="account"
+        options={{
+          title: 'Account',
+          headerLeft: () => <CogniPosHeaderLogo paddingLeft={20} />,
+          tabBarIcon: ({ color, size }) => <Ionicons name="person-outline" size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="cart"
         options={{
-          title: 'Cart',
-          tabBarIcon: ({ color, size }) => <Ionicons name="cart-outline" size={size} color={color} />,
+          title: 'Till cart',
+          href: null,
+          headerLeft: () => null,
         }}
       />
       <Tabs.Screen
         name="notes"
         options={{
-          title: 'Notes',
-          tabBarIcon: ({ color, size }) => <Ionicons name="document-text-outline" size={size} color={color} />,
+          href: null,
+          headerLeft: () => null,
         }}
       />
     </Tabs>
   )
 }
-
-const styles = StyleSheet.create({
-  settingsButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
-})
