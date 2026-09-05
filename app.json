@@ -2,7 +2,7 @@
   "expo": {
     "name": "CogniPOS",
     "slug": "ShopAssist",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/images/appIcon.png",
     "scheme": "shopassist",
